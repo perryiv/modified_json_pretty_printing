@@ -160,6 +160,31 @@ var isArrayOfStrings = function ( a )
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+//  Fix the line by removing the id.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+var fixLine = function ( line, id )
+{
+  // Split the line at our id.
+  var parts = line.split ( id );
+  var first = parts[0];
+  var second = parts[1];
+
+  // Drop the trailing quote on the first part.
+  first = first.slice ( 0, first.length - 1 );
+
+  // Remove the quote in the second part.
+  // This way we preserve a trailing comma, if any.
+  second = second.replace ( "\"", "" );
+
+  // Return the parts.
+  return { first: first, second: second };
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
 //  The main function, sort of.
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -186,8 +211,9 @@ var isArrayOfStrings = function ( a )
   // Parse the string into an object.
   file = JSON.parse ( file );
 
-  // We use this unique id below.
-  var id = "067D-78F5-81BD-4597-8E5F-7CDC-279E-A7D4-53C2-19AF-99CD-43F5-9257";
+  // We use these unique ids below.
+  var idNumbers = "067D-78F5-81BD-4597-8E5F-7CDC-279E-A7D4-53C2-19AF-99CD-43F5-9257";
+  var idStrings = "353A-8D4A-C7F9-42C1-B938-79BD-2436-EC1D-D8BF-2B3B-E4D6-4C58-95EF";
 
   // Indent two spaces.
   var indent = 2;
@@ -203,14 +229,14 @@ var isArrayOfStrings = function ( a )
     if ( isArrayOfNumbers ( value ) )
     {
       // Change this value into a string with our unique id at the beginning.
-      return ( id + "[ " + value.join ( ", " ) + " ]" );
+      return ( idNumbers + "[ " + value.join ( ", " ) + " ]" );
     }
 
     // If this value is an array of strings...
     else if ( isArrayOfStrings ( value ) )
     {
       // Change this value into a string with our unique id at the beginning.
-      return ( id + "[ " + value.join ( ", " ) + " ]" );
+      return ( idStrings + "[ " + value.join ( ", " ) + " ]" );
     }
 
     // Otherwise, return the value as-is.
@@ -229,23 +255,28 @@ var isArrayOfStrings = function ( a )
   {
     var line = lines[i];
 
-    // If we find our unique id somewhere in this line...
-    if ( -1 !== line.indexOf ( id ) )
+    // If we find our unique id for numbers somewhere in this line...
+    if ( -1 !== line.indexOf ( idNumbers ) )
     {
-      // Split the line at our id.
-      var parts = line.split ( id );
-      var first = parts[0];
-      var second = parts[1];
+      // Fix the line and put it back together.
+      var fixed = fixLine ( line, idNumbers );
+      line = fixed.first + fixed.second;
+    }
 
-      // Drop the trailing quote on the first part.
-      first = first.slice ( 0, first.length - 1 );
+    // If we find our unique id for strings somewhere in this line...
+    else if ( -1 !== line.indexOf ( idStrings ) )
+    {
+      // Fix the line.
+      var fixed = fixLine ( line, idStrings );
+      var second = fixed.second;
 
-      // Remove the quote in the second part.
-      // This way we preserve a trailing comma, if any.
-      second = second.replace ( "\"", "" );
+      // Wrap all the words with quotes.
+      second = second.replace ( /, /g, "\", \"" );
+      second = second.replace ( "\[ ", "[ \"" );
+      second = second.replace ( " \]", "\" \]" );
 
       // Put the line back together.
-      line = first + second;
+      line = fixed.first + second;
     }
 
     // Print the line.
