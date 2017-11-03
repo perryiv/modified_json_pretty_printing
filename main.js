@@ -43,20 +43,73 @@ var isNumber = function ( obj )
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+//  Is this a string?
+//
+////////////////////////////////////////////////////////////////////////////////
+
+var isString = function ( obj )
+{
+  return ( "string" == typeof ( obj ) );
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Is this an array?
+//
+////////////////////////////////////////////////////////////////////////////////
+
+var isArray = function ( obj )
+{
+  // Inexplicably, this is true: ( "object" == typeof ( null ) )
+  // Therefore, we have to test for null. Might as well test for undefined too.
+  if ( null === obj )
+  {
+    return false;
+  }
+
+  if ( undefined === obj )
+  {
+    return false;
+  }
+
+  if ( "object" != typeof ( obj ) )
+  {
+    return false;
+  }
+
+  var length = obj.length;
+
+  if ( !isNumber ( length ) )
+  {
+    return false;
+  }
+
+  if ( length < 0 )
+  {
+    return false;
+  }
+
+  return true;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
 //  Is this an array of all numbers?
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 var isArrayOfNumbers = function ( a )
 {
-  if ( !a )
+  if ( !isArray ( a ) )
   {
     return false;
   }
 
   var num = a.length;
 
-  if ( ( 0 === num ) || ( null === num ) || ( undefined === num ) )
+  if ( 0 === num )
   {
     return false;
   }
@@ -64,6 +117,38 @@ var isArrayOfNumbers = function ( a )
   for ( var i = 0; i < num; ++i )
   {
     if ( !isNumber ( a[i]) )
+    {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Is this an array of all strings?
+//
+////////////////////////////////////////////////////////////////////////////////
+
+var isArrayOfStrings = function ( a )
+{
+  if ( !isArray ( a ) )
+  {
+    return false;
+  }
+
+  var num = a.length;
+
+  if ( 0 === num )
+  {
+    return false;
+  }
+
+  for ( var i = 0; i < num; ++i )
+  {
+    if ( !isString ( a[i]) )
     {
       return false;
     }
@@ -116,6 +201,13 @@ var isArrayOfNumbers = function ( a )
   {
     // If this value is an array of numbers...
     if ( isArrayOfNumbers ( value ) )
+    {
+      // Change this value into a string with our unique id at the beginning.
+      return ( id + "[ " + value.join ( ", " ) + " ]" );
+    }
+
+    // If this value is an array of strings...
+    else if ( isArrayOfStrings ( value ) )
     {
       // Change this value into a string with our unique id at the beginning.
       return ( id + "[ " + value.join ( ", " ) + " ]" );
