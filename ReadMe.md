@@ -28,7 +28,7 @@ This script will output the following:
             [ 1, 2, 3 ]
           ]
         ],
-        [ Arrays, of, strings, are, on, one, line, too ],
+        [ "Arrays", "of", "strings", "are", "on", "one", "line", "too" ],
         [
           1,
           "Arrays",
@@ -53,4 +53,3 @@ This script will output the following:
         ]
       }
     }
-
