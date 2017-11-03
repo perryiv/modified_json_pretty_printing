@@ -195,10 +195,10 @@ var fixLine = function ( line, id )
   var argv = process.argv;
 
   // Check input arguments.
-  if ( argv.length !== 3 )
+  if ( argv.length < 3 )
   {
     var thisFile = path.basename ( argv[1] );
-    console.log ( "Usage: node", thisFile, "<input json file>" );
+    console.log ( "Usage: node", thisFile, "<input json file> [ minified | regular ]" );
     return;
   }
 
@@ -211,16 +211,33 @@ var fixLine = function ( line, id )
   // Parse the string into an object.
   file = JSON.parse ( file );
 
-  // We use these unique ids below.
-  var idNumbers = "067D-78F5-81BD-4597-8E5F-7CDC-279E-A7D4-53C2-19AF-99CD-43F5-9257";
-  var idStrings = "353A-8D4A-C7F9-42C1-B938-79BD-2436-EC1D-D8BF-2B3B-E4D6-4C58-95EF";
-
   // Indent two spaces.
   var indent = 2;
 
-  // Uncomment these next two lines to see regular output.
-  // console.log ( JSON.stringify ( file, null, indent ) );
-  // return;
+  // Are there additional options?
+  if ( argv.length > 3 )
+  {
+    var option = argv[3];
+
+    // Are we supposed to write it back out the regular way?
+    if ( "regular" == option )
+    {
+      console.log ( JSON.stringify ( file, null, indent ) );
+      return;
+    }
+
+    // Are we supposed to write it back out the regular way?
+    if ( "minified" == option )
+    {
+      console.log ( JSON.stringify ( file ) );
+      return;
+    }
+  }
+
+
+  // We use these unique ids below.
+  var idNumbers = "067D-78F5-81BD-4597-8E5F-7CDC-279E-A7D4-53C2-19AF-99CD-43F5-9257";
+  var idStrings = "353A-8D4A-C7F9-42C1-B938-79BD-2436-EC1D-D8BF-2B3B-E4D6-4C58-95EF";
 
   // Turn the object back into a string but with some modifications.
   file = JSON.stringify ( file, function ( key, value )
