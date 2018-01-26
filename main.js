@@ -25,8 +25,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-var fs = require ( "fs" );
-var path = require ( "path" );
+const fs = require ( "fs" );
+const path = require ( "path" );
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ var path = require ( "path" );
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-var isNumber = function ( obj )
+const isNumber = function ( obj )
 {
   return ( "number" == typeof ( obj ) );
 };
@@ -47,7 +47,7 @@ var isNumber = function ( obj )
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-var isString = function ( obj )
+const isString = function ( obj )
 {
   return ( "string" == typeof ( obj ) );
 };
@@ -59,7 +59,7 @@ var isString = function ( obj )
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-var isArray = function ( obj )
+const isArray = function ( obj )
 {
   // Inexplicably, this is true: ( "object" == typeof ( null ) )
   // Therefore, we have to test for null. Might as well test for undefined too.
@@ -78,7 +78,7 @@ var isArray = function ( obj )
     return false;
   }
 
-  var length = obj.length;
+  const length = obj.length;
 
   if ( !isNumber ( length ) )
   {
@@ -100,21 +100,21 @@ var isArray = function ( obj )
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-var isArrayOfNumbers = function ( a )
+const isArrayOfNumbers = function ( a )
 {
   if ( !isArray ( a ) )
   {
     return false;
   }
 
-  var num = a.length;
+  const num = a.length;
 
   if ( 0 === num )
   {
     return false;
   }
 
-  for ( var i = 0; i < num; ++i )
+  for ( let i = 0; i < num; ++i )
   {
     if ( !isNumber ( a[i]) )
     {
@@ -132,21 +132,21 @@ var isArrayOfNumbers = function ( a )
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-var isArrayOfStrings = function ( a )
+const isArrayOfStrings = function ( a )
 {
   if ( !isArray ( a ) )
   {
     return false;
   }
 
-  var num = a.length;
+  const num = a.length;
 
   if ( 0 === num )
   {
     return false;
   }
 
-  for ( var i = 0; i < num; ++i )
+  for ( let i = 0; i < num; ++i )
   {
     if ( !isString ( a[i]) )
     {
@@ -164,12 +164,12 @@ var isArrayOfStrings = function ( a )
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-var fixLine = function ( line, id )
+const fixLine = function ( line, id )
 {
   // Split the line at our id.
-  var parts = line.split ( id );
-  var first = parts[0];
-  var second = parts[1];
+  const parts = line.split ( id );
+  let first = parts[0];
+  let second = parts[1];
 
   // Drop the trailing quote on the first part.
   first = first.slice ( 0, first.length - 1 );
@@ -192,18 +192,18 @@ var fixLine = function ( line, id )
 ( function()
 {
   // Shortcuts.
-  var argv = process.argv;
+  const argv = process.argv;
 
   // Check input arguments.
   if ( argv.length < 3 )
   {
-    var thisFile = path.basename ( argv[1] );
+    const thisFile = path.basename ( argv[1] );
     console.log ( "Usage: node", thisFile, "<input json file> [ minified | regular ]" );
     return;
   }
 
   // Get the input file name.
-  var file = argv[2];
+  let file = argv[2];
 
   // Read the input file as a string.
   file = fs.readFileSync ( file, "utf8" );
@@ -212,12 +212,12 @@ var fixLine = function ( line, id )
   file = JSON.parse ( file );
 
   // Indent two spaces.
-  var indent = 2;
+  const indent = 2;
 
   // Are there additional options?
   if ( argv.length > 3 )
   {
-    var option = argv[3];
+    const option = argv[3];
 
     // Are we supposed to write it back out the regular way?
     if ( "regular" == option )
@@ -236,8 +236,8 @@ var fixLine = function ( line, id )
 
 
   // We use these unique ids below.
-  var idNumbers = "067D-78F5-81BD-4597-8E5F-7CDC-279E-A7D4-53C2-19AF-99CD-43F5-9257";
-  var idStrings = "353A-8D4A-C7F9-42C1-B938-79BD-2436-EC1D-D8BF-2B3B-E4D6-4C58-95EF";
+  const idNumbers = "067D-78F5-81BD-4597-8E5F-7CDC-279E-A7D4-53C2-19AF-99CD-43F5-9257";
+  const idStrings = "353A-8D4A-C7F9-42C1-B938-79BD-2436-EC1D-D8BF-2B3B-E4D6-4C58-95EF";
 
   // Turn the object back into a string but with some modifications.
   file = JSON.stringify ( file, function ( key, value )
@@ -264,19 +264,19 @@ var fixLine = function ( line, id )
   }, indent );
 
   // Split the pretty-printed JSON string into lines.
-  var lines = file.split ( "\n" );
+  const lines = file.split ( "\n" );
 
   // Loop through the lines.
-  var numLines = lines.length;
-  for ( var i = 0; i < numLines; ++i )
+  const numLines = lines.length;
+  for ( let i = 0; i < numLines; ++i )
   {
-    var line = lines[i];
+    let line = lines[i];
 
     // If we find our unique id for numbers somewhere in this line...
     if ( -1 !== line.indexOf ( idNumbers ) )
     {
       // Fix the line and put it back together.
-      var fixed = fixLine ( line, idNumbers );
+      const fixed = fixLine ( line, idNumbers );
       line = fixed.first + fixed.second;
     }
 
@@ -284,13 +284,13 @@ var fixLine = function ( line, id )
     else if ( -1 !== line.indexOf ( idStrings ) )
     {
       // Fix the line.
-      var fixed = fixLine ( line, idStrings );
-      var second = fixed.second;
+      const fixed = fixLine ( line, idStrings );
+      let second = fixed.second;
 
       // Wrap all the words with quotes.
       second = second.replace ( /, /g, "\", \"" );
-      second = second.replace ( "\[ ", "[ \"" );
-      second = second.replace ( " \]", "\" \]" );
+      second = second.replace ( "[ ", "[ \"" );
+      second = second.replace ( " ]", "\" ]" );
 
       // Put the line back together.
       line = fixed.first + second;
